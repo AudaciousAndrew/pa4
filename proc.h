@@ -3,6 +3,7 @@
 #include "banking.h"
 #include "common.h"
 #include "pa2345.h"
+#include "queue.h"
 
 #define ARR_SIZE    11
 #define FD_MAX      2
@@ -13,7 +14,7 @@
 
 int proc_number;
 int pipes[ARR_SIZE][ARR_SIZE][FD_MAX];
-int mutexl;
+int mutexl = 0, running_processes;
 timestamp_t lamport_time;
 FILE *event_log;
 FILE *pipe_log;
@@ -22,6 +23,7 @@ int init_pipes(int pipes[ARR_SIZE][ARR_SIZE][FD_MAX]);
 void close_fds(int pipes[ARR_SIZE][ARR_SIZE][FD_MAX], local_id id);
 
 typedef struct {
+	queue_t *queue;            /**< */
     local_id id;   /**< ID for the process. */
 } process;
 

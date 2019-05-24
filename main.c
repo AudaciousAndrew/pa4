@@ -112,6 +112,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
+    running_processes = proc_number;
     event_log = fopen(events_log, "w+");
     pipe_log = fopen(pipes_log, "w");
 
@@ -125,7 +126,7 @@ int main(int argc, char *argv[]) {
         } else if (0 == pid) {
             /* Child. */
             proc.id = i;
-            int ret = process_c(&proc, i);
+            int ret = process_c(&proc);
             exit(ret);
         }
     }

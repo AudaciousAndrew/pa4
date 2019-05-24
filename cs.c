@@ -51,7 +51,7 @@ request_cs(const void * self) {
 			} 
 			case DONE: { 
 				fprintf(stderr, "%d: process %d got DONE from %d\n", get_lamport_time(), p->self_id, id); 
-				p->running_processes--; 
+				running_processes--; 
 				break; 
 			} 
 			default: { 

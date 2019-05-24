@@ -28,7 +28,7 @@ void synchronize(process *proc, MessageType m_type, char *payload, size_t payloa
 
 void working_cycle(process *proc) {
 
-    if (proc->io->mutexl)
+    if (mutexl)
         request_cs((void*)proc);
     
     for (int i = 1; i <= 5 * proc->id; i++) {
@@ -39,7 +39,7 @@ void working_cycle(process *proc) {
         print(str);
     }
 
-    if (proc->io->mutexl)
+    if (mutexl)
         release_cs((void*)proc);
 }
 
@@ -49,13 +49,13 @@ int process_c(process *proc) {
     char payload[MAX_PAYLOAD_LEN];
     size_t payload_len;
 
-    /*ADD PROCC CREATION
 
-
-
-
-    */
-    
+    process proc;
+    char payload[MAX_PAYLOAD_LEN];
+    size_t len;
+    p = (process){
+        .queue   = queue_create()
+    };
 
 
     close_fds(pipes, proc->id);
