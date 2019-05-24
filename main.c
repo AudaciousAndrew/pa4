@@ -105,25 +105,6 @@ void receive_all_msg(process *proc, MessageType m_type) {
 }
 
 
-void receive_all_balance(process *proc, AllHistory *all_history) {
-    Message tmp_msg = {{ 0 }};
-    local_id i = 1;
-    while (i <= proc_number) {
-        while(receive((void*)proc, i, &tmp_msg) != 0)
-            ;
-            set_lamport_time(tmp_msg.s_header.s_local_time);
-            inc_time();
-
-            if (tmp_msg.s_header.s_type == BALANCE_HISTORY) {
-                memcpy(&all_history->s_history[i-1], &tmp_msg.s_payload, tmp_msg.s_header.s_payload_len);
-                balance_t b  = all_history->s_history[i-1].s_history[all_history->s_history[i-1].s_history_len].s_balance;
-                fprintf(event_log, log_done_fmt, get_lamport_time(),proc->id, b);
-                i++;
-            }
-    }
-    all_history->s_history_len = proc_number;
-}
-
 int main(int argc, char *argv[]) {
 
     process proc;
@@ -146,30 +127,25 @@ int main(int argc, char *argv[]) {
         } else if (0 == pid) {
             /* Child. */
             proc.id = i;
-            int ret = process_c(&proc, balances[i-1]);
+            int ret = process_c(&proc, i);
             exit(ret);
         }
     }
     close_fds(pipes, PARENT_ID);
 
     proc.id = PARENT_ID;
-    AllHistory all_history = { 0 };
+  
 
     receive_all_msg(&proc, STARTED);
     fprintf(event_log, log_received_all_started_fmt, 
             get_lamport_time(), PARENT_ID);
 
-    bank_robbery(&proc, proc_number);
-
-    inc_time();
-    Message msg = init_msg(STOP,0);
-    send_multicast(&proc,&msg);
 
     receive_all_msg(&proc, DONE);
     fprintf(event_log,log_received_all_done_fmt,
             get_lamport_time(), PARENT_ID);
-    receive_all_balance(&proc, &all_history);
-    print_history(&all_history);
+
+
 
     while(wait(NULL) > 0);
 

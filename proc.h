@@ -29,14 +29,10 @@ typedef struct {
 int get_arguments(int argc, char **argv);
 Message init_msg(MessageType type , size_t payload_len);
 void receive_all_msg(process *proc, MessageType m_type);
-void receive_all_balance(process *proc, AllHistory *all_history);
 
-int process_c(process *p, balance_t balance);
+int process_c(process *proc);
 void synchronize(process *proc, MessageType m_type, char *payload, size_t payload_len);
-void balance_copy(BalanceHistory *balance_history, uint8_t time);
-void balance_set(BalanceHistory *balance_history, balance_t balance);
-void transfer_cycle(process *proc, BalanceHistory *balance_history, TransferOrder *transfer_order);
-void working_cycle(process *proc, BalanceHistory *balance_history);
+void working_cycle(process *proc);
 
 /* lamport */
 timestamp_t get_lamport_time();
