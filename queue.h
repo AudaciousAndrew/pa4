@@ -1,27 +1,24 @@
 #ifndef __IFMO_DISTCOMP_QUEUE_H__ 
 #define __IFMO_DISTCOMP_QUEUE_H__ 
 
-typedef struct _node_t { 
-	struct _node_t *next; 
+typedef struct list_item { 
+	struct list_item *next; 
 	local_id id; 
 	timestamp_t time; 
-} node_t; 
+} list_item; 
 
-typedef struct _queue_t { 
-	node_t *head; 
+typedef struct queue { 
+	list_item *head; 
 	size_t len; 
-} queue_t; 
+} queue; 
 
-node_t *node_create(local_id id, timestamp_t time); 
+list_item *create_item(local_id id, timestamp_t time); 
 
-queue_t *queue_create(void); 
-
-void queue_destroy(queue_t *q); 
-
-node_t *queue_first(queue_t *q); 
-void queue_delete_first(queue_t *q); 
-void queue_insert(queue_t *q, node_t *n); 
-void queue_print(queue_t *q, int id); 
+queue *init(void); 
+void destroy(queue *q); 
+void pop(queue *q); 
+void push(queue *q, list_item *n); 
+void print_queue(queue *q, int id); 
 
 
 #endif /* __IFMO_DISTCOMP_QUEUE_H__ */

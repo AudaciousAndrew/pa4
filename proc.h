@@ -14,7 +14,8 @@
 
 int proc_number;
 int pipes[ARR_SIZE][ARR_SIZE][FD_MAX];
-int mutexl = 0, running_processes;
+int mutexl;
+int running_processes;
 timestamp_t lamport_time;
 FILE *event_log;
 FILE *pipe_log;
@@ -23,7 +24,7 @@ int init_pipes(int pipes[ARR_SIZE][ARR_SIZE][FD_MAX]);
 void close_fds(int pipes[ARR_SIZE][ARR_SIZE][FD_MAX], local_id id);
 
 typedef struct {
-	queue_t *queue;            /**< */
+	queue *queue;            /**< */
     local_id id;   /**< ID for the process. */
 } process;
 

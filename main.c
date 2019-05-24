@@ -105,7 +105,7 @@ void receive_all_msg(process *proc, MessageType m_type) {
 int main(int argc, char *argv[]) {
 
     process proc;
-
+    mutexl = 0;
     if(get_arguments(argc, argv) != 0) {
         perror("Wrong arguments:get_arguments() main.c");
         return -1;

@@ -23,7 +23,7 @@ request_cs(const void * self) {
 	inc_time(); 
 	send_multicast((void*)p, &msg); 
 
-	queue_insert(p->queue, node_create(p->id, get_lamport_time())); 
+	push(p->queue, create_item(p->id, get_lamport_time())); 
 	int wait_reply =proc_number-1; 
 	while (wait_reply != 0 || (p->queue->len && p->queue->head->id != p->id) ) { 
 		int id; 
@@ -33,7 +33,7 @@ request_cs(const void * self) {
 		switch (msg.s_header.s_type) { 
 			case CS_REQUEST: { 
 				fprintf(stderr, "%d: process %d got request from %d\n", get_lamport_time(), p->id, id); 
-				queue_insert(p->queue, node_create(id, msg.s_header.s_local_time)); 
+				push(p->queue, create_item(id, msg.s_header.s_local_time)); 
 				inc_time(); 
 				msg.s_header.s_type = CS_REPLY; 
 				msg.s_header.s_local_time = get_lamport_time(); 
@@ -47,7 +47,7 @@ request_cs(const void * self) {
 			} 
 			case CS_RELEASE: { 
 				fprintf(stderr, "%d: process %d got release from %d\n", get_lamport_time(), p->id, id); 
-				queue_delete_first(p->queue); 
+				pop(p->queue); 
 				break; 
 			} 
 			case DONE: { 
