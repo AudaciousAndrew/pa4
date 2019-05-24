@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <string.h>
+#include <alloca.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -17,7 +18,7 @@ void synchronize(process *proc, MessageType m_type, char *payload, size_t payloa
     /* new part */
     int total = proc_number - 1;
     while (total > 0) {
-        while (receive_any((void*)proc, &tmp_msg < 0));
+        while (receive_any((void*)proc, &tmp_msg) < 0 );
         set_lamport_time(tmp_msg.s_header.s_local_time);
            inc_time();
         if(m_type == tmp_msg.s_header.s_type) --total; 
@@ -48,11 +49,6 @@ int process_c(process *proc) {
 
     char payload[MAX_PAYLOAD_LEN];
     size_t payload_len;
-
-
-    process proc;
-    char payload[MAX_PAYLOAD_LEN];
-    size_t len;
     p = (process){
         .queue   = queue_create()
     };

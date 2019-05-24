@@ -18,21 +18,21 @@
 */ 
 int 
 request_cs(const void * self) { 
-	proc_t *p = (proc_t*)self; 
+	process *p = (process*)self; 
 	Message msg = init_msg(CS_REQUEST,0); 
 	inc_time(); 
 	send_multicast((void*)p, &msg); 
 
-	queue_insert(p->queue, node_create(p->self_id, get_lamport_time())); 
+	queue_insert(p->queue, node_create(p->id, get_lamport_time())); 
 	int wait_reply =proc_number-1; 
-	while (wait_reply != 0 || (p->queue->len && p->queue->head->id != p->self_id) ) { 
+	while (wait_reply != 0 || (p->queue->len && p->queue->head->id != p->id) ) { 
 		int id; 
 		while ((id = receive_any((void*)p, &msg)) < 0); 
 		set_lamport_time(msg.s_header.s_local_time);
 		inc_time();
 		switch (msg.s_header.s_type) { 
 			case CS_REQUEST: { 
-				fprintf(stderr, "%d: process %d got request from %d\n", get_lamport_time(), p->self_id, id); 
+				fprintf(stderr, "%d: process %d got request from %d\n", get_lamport_time(), p->id, id); 
 				queue_insert(p->queue, node_create(id, msg.s_header.s_local_time)); 
 				inc_time(); 
 				msg.s_header.s_type = CS_REPLY; 
@@ -41,22 +41,22 @@ request_cs(const void * self) {
 				break; 
 			} 
 			case CS_REPLY: { 
-				fprintf(stderr, "%d: process %d got replay from %d\n", get_lamport_time(), p->self_id, id); 
+				fprintf(stderr, "%d: process %d got replay from %d\n", get_lamport_time(), p->id, id); 
 				wait_reply--; 
 				break; 
 			} 
 			case CS_RELEASE: { 
-				fprintf(stderr, "%d: process %d got release from %d\n", get_lamport_time(), p->self_id, id); 
+				fprintf(stderr, "%d: process %d got release from %d\n", get_lamport_time(), p->id, id); 
 				queue_delete_first(p->queue); 
 				break; 
 			} 
 			case DONE: { 
-				fprintf(stderr, "%d: process %d got DONE from %d\n", get_lamport_time(), p->self_id, id); 
+				fprintf(stderr, "%d: process %d got DONE from %d\n", get_lamport_time(), p->id, id); 
 				running_processes--; 
 				break; 
 			} 
 			default: { 
-				fprintf(stderr, "%d: process %d got unknown type: %d\n", get_lamport_time(), p->self_id, msg.s_header.s_type); 
+				fprintf(stderr, "%d: process %d got unknown type: %d\n", get_lamport_time(), p->id, msg.s_header.s_type); 
 			} 
 
 		} 
@@ -66,7 +66,7 @@ request_cs(const void * self) {
 
 int 
 release_cs(const void * self) { 
-	proc_t *p = (proc_t*)self; 
+	process *p = (process*)self; 
 	Message msg = init_msg(CS_RELEASE,0); 
 	inc_time(); 
 	send_multicast((void*)p, &msg); 

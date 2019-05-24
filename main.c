@@ -92,10 +92,10 @@ void receive_all_msg(process *proc, MessageType m_type) {
     Message tmp_msg = { {0} };
     int tmp_num = proc_number;
     while(tmp_num){
-       while(receive_any((void*)proc, &msg) < 0);
-       if( m_type == msg.s_header.s_type){
+       while(receive_any((void*)proc, &tmp_msg) < 0);
+       if( m_type == tmp_msg.s_header.s_type){
             tmp_num--;
-            set_lamport_time(msg.s_header.s_local_time);
+            set_lamport_time(tmp_msg.s_header.s_local_time);
             inc_time();
        } 
     }
