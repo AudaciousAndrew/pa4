@@ -91,9 +91,9 @@ Message init_msg(MessageType type , size_t payload_len){
 void receive_all_msg(process *proc, MessageType m_type) {
     Message tmp_msg = { {0} };
     int tmp_num = proc_number;
-    while(tmp_num){
-       while(receive_any((void*)proc, &tmp_msg) < 0);
-       if( m_type == tmp_msg.s_header.s_type){
+    for(int i = tmp_num; i > 0 ; i--){
+        while(receive_any((void*)proc, &tmp_msg) < 0);
+        if( m_type == tmp_msg.s_header.s_type){
             tmp_num--;
             set_lamport_time(tmp_msg.s_header.s_local_time);
             inc_time();
@@ -131,8 +131,6 @@ int main(int argc, char *argv[]) {
     }
     close_fds(pipes, PARENT_ID);
 
-    /* proc_t create
-    */
     proc.id = 0;
 
     receive_all_msg(&proc, STARTED);

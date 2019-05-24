@@ -3,19 +3,8 @@
 #include "ipc.h" 
 #include "queue.h" 
 #include "proc.h" 
-#include "pa2345.h" 
 
 
-/** 
-* 
-* @algo 
-* REQUEST: 
-* *) Q_i — queue of P_i; 
-* When P_i needs access to CS, it sends REQUEST(L_i, i) 
-* to all process and adds the message to it's own queue. 
-* *) 
-* 
-*/ 
 int 
 request_cs(const void * self) { 
 	process *p = (process*)self; 
@@ -30,46 +19,34 @@ request_cs(const void * self) {
 		while ((id = receive_any((void*)p, &msg)) < 0); 
 		set_lamport_time(msg.s_header.s_local_time);
 		inc_time();
-		switch (msg.s_header.s_type) { 
-			case CS_REQUEST: { 
-				fprintf(stderr, "%d: process %d got request from %d\n", get_lamport_time(), p->id, id); 
-				push(p->queue, create_item(id, msg.s_header.s_local_time)); 
-				inc_time(); 
-				msg.s_header.s_type = CS_REPLY; 
-				msg.s_header.s_local_time = get_lamport_time(); 
-				send((void*)p, id, &msg); 
-				break; 
-			} 
-			case CS_REPLY: { 
-				fprintf(stderr, "%d: process %d got replay from %d\n", get_lamport_time(), p->id, id); 
-				wait_reply--; 
-				break; 
-			} 
-			case CS_RELEASE: { 
-				fprintf(stderr, "%d: process %d got release from %d\n", get_lamport_time(), p->id, id); 
-				pop(p->queue); 
-				break; 
-			} 
-			case DONE: { 
-				fprintf(stderr, "%d: process %d got DONE from %d\n", get_lamport_time(), p->id, id); 
-				running_processes--; 
-				break; 
-			} 
-			default: { 
-				fprintf(stderr, "%d: process %d got unknown type: %d\n", get_lamport_time(), p->id, msg.s_header.s_type); 
-			} 
-
-		} 
+		if(msg.s_header.s_type == CS_REQUEST){
+			fprintf(stderr, "%d: PID %d received CS_REQUEST from %d\n", get_lamport_time(), p->id, id); 
+			push(p->queue, create_item(id, msg.s_header.s_local_time)); 
+			inc_time(); 
+			msg.s_header.s_type = CS_REPLY; 
+			msg.s_header.s_local_time = get_lamport_time(); 
+			send((void*)p, id, &msg); 
+		}else  if(msg.s_header.s_type == CS_REPLY) {
+			fprintf(stderr, "%d: PID %d received CS_REPLY from %d\n", get_lamport_time(), p->id, id); 
+			wait_reply--; 
+		}else if(msg.s_header.s_type == CS_RELEASE){
+			fprintf(stderr, "%d: PID %d received CS_RELEASE from %d\n", get_lamport_time(), p->id, id); 
+			pop(p->queue); 
+		}else if(msg.s_header.s_type == DONE){
+			fprintf(stderr, "%d: PID %d received DONE from %d\n", get_lamport_time(), p->id, id); 
+			running_processes--; 
+		}else {
+			fprintf(stderr, "%d: PID %d received UNKNOWN m_type: %d\n", get_lamport_time(), p->id, msg.s_header.s_type); 
+		}
 	} 
 	return 0; 
 } 
 
 int 
-release_cs(const void * self) { 
-	process *p = (process*)self; 
+release_cs(const void * proc) { 
 	Message msg = init_msg(CS_RELEASE,0); 
 	inc_time(); 
-	send_multicast((void*)p, &msg); 
+	send_multicast((void*)proc, &msg); 
 	return 0; 
 }
 
