@@ -90,23 +90,3 @@ queue_print(queue_t *q, int id) {
 	} 
 } 
 
-/* 
-int 
-main(int argc, char *argv[]) { 
-
-queue_t *q = queue_create(); 
-
-queue_insert(q, node_create(2,1)); 
-queue_insert(q, node_create(3,2)); 
-queue_insert(q, node_create(4,1)); 
-queue_insert(q, node_create(1,2)); 
-queue_insert(q, node_create(5,1)); 
-queue_insert(q, node_create(6,2)); 
-queue_insert(q, node_create(0,1)); 
-
-queue_print(q); 
-
-queue_destroy(q); 
-return 0; 
-} 
-*/

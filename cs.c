@@ -19,19 +19,12 @@
 int 
 request_cs(const void * self) { 
 	proc_t *p = (proc_t*)self; 
-	Message msg; 
-	increase_lamport_time(); 
-	msg.s_header = (MessageHeader) { 
-		.s_magic = MESSAGE_MAGIC, 
-		.s_type = CS_REQUEST, 
-		.s_local_time = get_lamport_time(), 
-		.s_payload_len = 0 
-	}; 
-
+	Message msg = init_msg(CS_REQUEST,0); 
+	inc_time(); 
 	send_multicast((void*)p, &msg); 
 
 	queue_insert(p->queue, node_create(p->self_id, get_lamport_time())); 
-	int wait_reply = p->io->procnum-1; 
+	int wait_reply =proc_number-1; 
 	while (wait_reply != 0 || (p->queue->len && p->queue->head->id != p->self_id) ) { 
 		int id; 
 		while ((id = receive_any((void*)p, &msg)) < 0); 
@@ -40,7 +33,7 @@ request_cs(const void * self) {
 			case CS_REQUEST: { 
 				fprintf(stderr, "%d: process %d got request from %d\n", get_lamport_time(), p->self_id, id); 
 				queue_insert(p->queue, node_create(id, msg.s_header.s_local_time)); 
-				increase_lamport_time(); 
+				inc_time(); 
 				msg.s_header.s_type = CS_REPLY; 
 				msg.s_header.s_local_time = get_lamport_time(); 
 				send((void*)p, id, &msg); 
@@ -73,14 +66,10 @@ request_cs(const void * self) {
 int 
 release_cs(const void * self) { 
 	proc_t *p = (proc_t*)self; 
-	Message msg; 
-	increase_lamport_time(); 
-	msg.s_header = (MessageHeader) { 
-		.s_magic = MESSAGE_MAGIC, 
-		.s_type = CS_RELEASE, 
-		.s_local_time = get_lamport_time(), 
-		.s_payload_len = 0 
-	}; 
+	Message msg = init_msg(CS_RELEASE,0); 
+	inc_time(); 
 	send_multicast((void*)p, &msg); 
 	return 0; 
 }
+
+

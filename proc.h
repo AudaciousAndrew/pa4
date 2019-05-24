@@ -12,12 +12,11 @@
 #define ARGUMENTS_OFFSET 3
 
 int proc_number;
-balance_t balances[MAX_PROCESS_ID];
+int pipes[ARR_SIZE][ARR_SIZE][FD_MAX];
+int mutex;
 timestamp_t lamport_time;
-
 FILE *event_log;
 FILE *pipe_log;
-int pipes[ARR_SIZE][ARR_SIZE][FD_MAX];
 
 int init_pipes(int pipes[ARR_SIZE][ARR_SIZE][FD_MAX]);
 void close_fds(int pipes[ARR_SIZE][ARR_SIZE][FD_MAX], local_id id);
