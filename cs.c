@@ -15,9 +15,10 @@ request_cs(const void * self) {
 	inc_time(); 
 	send_multicast((void*)procc, &tmp_msg); 
 
+
 	push(procc->queue, create_item(procc->id, get_lamport_time())); 
-	int w_reply =proc_number-1; 
-	while (w_reply != 0 || (procc->queue->len && procc->queue->head->id != procc->id) ) { 
+	int w_reply = proc_number-1; 
+	while (w_reply != 0 ) { 
 		int id; 
 		while ((id = receive_any((void*)procc, &tmp_msg)) < 0); 
 		set_lamport_time(local_time);
