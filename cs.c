@@ -28,7 +28,8 @@ request_cs(const void * self) {
 	while (wait_reply != 0 || (p->queue->len && p->queue->head->id != p->self_id) ) { 
 		int id; 
 		while ((id = receive_any((void*)p, &msg)) < 0); 
-		set_lamport_time(msg.s_header.s_local_time); 
+		set_lamport_time(msg.s_header.s_local_time);
+		inc_time();
 		switch (msg.s_header.s_type) { 
 			case CS_REQUEST: { 
 				fprintf(stderr, "%d: process %d got request from %d\n", get_lamport_time(), p->self_id, id); 

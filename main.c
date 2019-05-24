@@ -90,15 +90,14 @@ Message init_msg(MessageType type , size_t payload_len){
 
 void receive_all_msg(process *proc, MessageType m_type) {
     Message tmp_msg = { {0} };
-    for (local_id i = 1; i <= proc_number; i++) {
-        while(receive((void*)proc, i, &tmp_msg) != 0);
-        set_lamport_time(tmp_msg.s_header.s_local_time);
-        inc_time();
-        if (tmp_msg.s_header.s_type != m_type) {
-            fprintf(pipe_log, 
-                    "Wrong message received: expected %d,instead got %d.\n",
-                    m_type, tmp_msg.s_header.s_type);
-        }
+    int tmp_num = proc_number;
+    while(tmp_num){
+       while(receive_any((void*)proc, &msg) < 0);
+       if( m_type == msg.s_header.s_type){
+            tmp_num--;
+            set_lamport_time(msg.s_header.s_local_time);
+            inc_time();
+       } 
     }
 }
 
@@ -125,14 +124,15 @@ int main(int argc, char *argv[]) {
         } else if (0 == pid) {
             /* Child. */
             proc.id = i;
-            int ret = process_c(&proc, i);
+            int ret = process_c(&proc);
             exit(ret);
         }
     }
     close_fds(pipes, PARENT_ID);
 
-    proc.id = PARENT_ID;
-  
+    /* proc_t create
+    */
+    proc.id = 0;
 
     receive_all_msg(&proc, STARTED);
     fprintf(event_log, log_received_all_started_fmt, 
