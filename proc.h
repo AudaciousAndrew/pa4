@@ -13,7 +13,7 @@
 
 int proc_number;
 int pipes[ARR_SIZE][ARR_SIZE][FD_MAX];
-int mutex;
+int mutexl;
 timestamp_t lamport_time;
 FILE *event_log;
 FILE *pipe_log;
