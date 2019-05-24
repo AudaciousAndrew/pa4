@@ -12,15 +12,13 @@
 #include "proc.h"
 
 int get_arguments(int argc, char **argv) {
-    if (argc != atoi(argv[2])+ARGUMENTS_OFFSET || (strcmp(argv[1], "-p") != 0))     return -1;
-    proc_number = atoi(argv[2]);
-    if(proc_number < 0) return -1;
-    for (int i = 0; i < proc_number; i++){
-        balances[i] = atoi(argv[i+ARGUMENTS_OFFSET]);
-        if (balances[i] < 0){ 
-            return -1;
+    for( int i = 0 ; i < argc ; i++){
+        if (strcmp(argv[i], "--mutexl") == 0) mutexl = 1;
+        if (strcmp(argv[i], "-p") == 0){
+            proc_number= atoi(argv[i+1]);
         }
     }
+    if(proc_number < 0) return -1;
     return 0;
 }
 
