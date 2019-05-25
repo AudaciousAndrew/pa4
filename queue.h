@@ -17,7 +17,6 @@ queue *init(void);
 void destroy(queue *q); 
 void pop(queue *q); 
 void push(queue *queue, list_item *n); 
-void print_queue(queue *q, int id); 
 
 
 #endif /* __IFMO_DISTCOMP_QUEUE_H__ */

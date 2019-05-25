@@ -14,7 +14,7 @@ request_cs(const void * self) {
 
 	push(p->queue, create_item(p->id, get_lamport_time())); 
 	int wait_reply =proc_number-1; 
-	while (wait_reply != 0 /*|| (p->queue->len && p->queue->head->pid != p->id) */) { 
+	while (wait_reply != 0) { 
 		int id; 
 		while ((id = receive_any((void*)p, &msg)) < 0); 
 		set_lamport_time(msg.s_header.s_local_time);

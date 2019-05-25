@@ -8,10 +8,6 @@
 
 list_item *create_item(local_id id, timestamp_t time) { 
 	list_item *item = (list_item*)malloc(sizeof(list_item)); 
-	// if (item == NULL) { 
-	// 	perror("malloc"); 
-	// 	exit(-1); 
-	// } 
 	item->next = NULL; 
 	item->pid = id; 
 	item->time = time; 
@@ -19,23 +15,25 @@ list_item *create_item(local_id id, timestamp_t time) {
 } 
 
 queue *init(void) { 
-	queue *q = (queue*)malloc(sizeof(queue)); 
-	// if (q == NULL) { 
-	// 	perror("malloc"); 
-	// 	exit(-1); 
-	// } 
-	q->head = NULL; 
-	return q; 
+	queue *queuE = (queue*)malloc(sizeof(queue)); 
+	queuE->head = NULL; 
+	return queuE; 
 } 
 
-void destroy(queue *q) { 
+void destroy(queue *queue) { 
 	list_item *item; 
-	while (q->head) { 
-		item = q->head->next; 
-		free(q->head); 
-		q->head = item; 
+	while (queue->head != NULL) { 
+		item = queue->head->next; 
+		free(queue->head); 
+		queue->head = item; 
 	} 
-	free(q); 
+	free(queue); 
+} 
+
+void pop(queue *queue) { 
+	list_item *next = queue->head->next; 
+	free(queue->head); 
+	queue->head = next; 
 } 
 
 void push(queue *queue, list_item *new_item) { 
@@ -64,18 +62,5 @@ void push(queue *queue, list_item *new_item) {
 		prev->next = new_item;
 		new_item = NULL;
 	}
-} 
-
-void pop(queue *q) { 
-	list_item *next = q->head->next; 
-	free(q->head); 
-	q->head = next; 
-} 
-
-void print_queue(queue *q, int id) { 
-	list_item *t = q->head; 
-	for (int i = 0; t; t = t->next, i++) { 
-		fprintf(stderr, "Process %d #%d: ID[%d] TIME[%d]\n", id, i, t->pid, t->time); 
-	} 
 } 
 
